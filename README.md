@@ -1,12 +1,7 @@
 # react-native-fetch-blob
 [![release](https://img.shields.io/github/release/wkh237/react-native-fetch-blob.svg?style=flat-square)](https://github.com/wkh237/react-native-fetch-blob/releases) [![npm](https://img.shields.io/npm/v/react-native-fetch-blob.svg?style=flat-square)](https://www.npmjs.com/package/react-native-fetch-blob) ![](https://img.shields.io/badge/PR-Welcome-brightgreen.svg?style=flat-square) [![](https://img.shields.io/badge/Wiki-Public-brightgreen.svg?style=flat-square)](https://github.com/wkh237/react-native-fetch-blob/wiki) [![npm](https://img.shields.io/npm/l/react-native-fetch-blob.svg?maxAge=2592000&style=flat-square)]()
 
-
 A project committed to make file acess and data transfer easier, efficient for React Native developers.
-
-> If you're going to use github repo as npm dependency please visit the [archive repository](https://github.com/wkh237/react-native-fetch-blob-package/releases/tag/v0.9.6).
-
-> For Firebase Storage solution, please upgrade to 0.10.1-beta.1 for best compatibility.
 
 ## Features
 - Transfer data directly from/to storage without BASE64 bridging
@@ -14,7 +9,6 @@ A project committed to make file acess and data transfer easier, efficient for R
 - Native-to-native file manipulation API, reduce JS bridging performance loss
 - File stream support for dealing with large file
 - Blob, File, XMLHttpRequest polyfills that make browser-based library available in RN (experimental)
-- JSON stream supported base on [Oboe.js](https://github.com/jimhigson/oboe.js/) @jimhigson
 
 ## TOC
 * [About](#user-content-about)
@@ -37,7 +31,7 @@ A project committed to make file acess and data transfer easier, efficient for R
 * [Web API Polyfills](#user-content-web-api-polyfills)
 * [Performance Tips](#user-content-performance-tips)
 * [API References](https://github.com/wkh237/react-native-fetch-blob/wiki/Fetch-API)
-* [Caveats](#user-content-caveats)
+* [Trouble Shooting](https://github.com/wkh237/react-native-fetch-blob/wiki/Trouble-Shooting)
 * [Development](#user-content-development)
 
 ## About
@@ -58,8 +52,8 @@ npm install --save react-native-fetch-blob
 Or if using CocoaPods, add the pod to your `Podfile`, for example:
 
 ```
-pod 'react-native-fetch-blob',
-    :path => '../node_modules/react-native-fetch-blob'
+pod 'react-native-fetch-blob,
+    :path => '../node_modules/react-native-fetch-blob
 ```
 
 **Automatically Link Native Modules**
@@ -406,7 +400,7 @@ In `version >= 0.4.2` it is possible to know the upload/download progress. After
     })
 ```
 
-In `0.9.6`, you can specify an object as first argument which contains `count` and `interval`, to the frequency of progress event (this will be done in native context in order to reduce RCT bridge overhead). Notice that `count` argument will not work if the server does not provide response content length.
+In `0.9.6`, you can specify an optional first argument which contains `count` and `interval` to limit progress event frequency (this will be done in native context in order to reduce RCT bridge overhead). Notice that `count` argument will not work if the server does not provide response content length.
 
 
 ```js
@@ -432,7 +426,7 @@ In `0.9.6`, you can specify an object as first argument which contains `count` a
 
 ### Cancel Request
 
-After `0.7.0` it is possible to cancel an HTTP request. When the request is cancelled, it will throw a promise rejection, be sure to catch it.
+After `0.7.0` it is possible to cancel a HTTP request. When the request cancel, it will definately throws an promise rejection, be sure to catch it.
 
 ```js
 let task = RNFetchBlob.fetch('GET', 'http://example.com/file/1')
@@ -608,10 +602,10 @@ When calling `readStream` method, you have to `open` the stream, and start to re
 ```js
 let data = ''
 RNFetchBlob.fs.readStream(
-    // file path
-    PATH_TO_THE_FILE,
     // encoding, should be one of `base64`, `utf8`, `ascii`
     'base64',
+    // file path
+    PATH_TO_THE_FILE,
     // (optional) buffer size, default to 4096 (4095 for BASE64 encoded data)
     // when reading file in BASE64 encoding, buffer size must be multiples of 3.
     4095)
@@ -738,7 +732,7 @@ Here's a [sample app](https://github.com/wkh237/rn-firebase-storage-upload-sampl
 
 ## Performance Tips
 
-**Read Stream and Progress Event Overhead**
+**Read Stream Event Overhead**
 
 When reading data via `fs.readStream` the process seems blocking JS thread when file is large, it's because the default buffer size is quite small (4kb) which result in large amount of events triggered in JS thread, try to increase the buffer size (for example 100kb = 102400) and set a larger interval (which is introduced in 0.9.4 default value is 10ms) to limit the frequency.
 
@@ -759,16 +753,6 @@ Due to the [lack of typed array implementation in JavascriptCore, and limitation
 If you're going to concatenate files, you don't have to read the data to JS context anymore ! In `0.8.0` we introduced new encoding `uri` for writeFile and appendFile API. Which make it possible to done the whole process in native.
 
 <img src="img/performance_f2f.png" style="width : 100%"/>
-
-## Caveats
-
-* This library does not urlencode unicode characters in URL automatically, see [#146](https://github.com/wkh237/react-native-fetch-blob/issues/146).
-* When a `Blob` is created from existing file, the file **WILL BE REMOVE** if you `close` the blob.
-* If you replaced `window.XMLHttpRequest` for some reason (e.g. make Firebase SDK work), it will also effect how official `fetch` works (basically it should work just fine).
-* When file stream and upload/download progress event slow down your app, consider upgrade to `0.9.6+`, use [additional arguments](https://github.com/wkh237/react-native-fetch-blob/wiki/Fetch-API#fetchprogressconfig-eventlistenerpromisernfetchblobresponse) to limit its frequency.
-* When passing a file path to the library, remove `file://` prefix.
-
-when you got problem, have a look at [Trouble Shooting](https://github.com/wkh237/react-native-fetch-blob/wiki/Trouble-Shooting) or [issues labeled Trouble Shooting](https://github.com/wkh237/react-native-fetch-blob/issues?utf8=✓&q=label%3A%22trouble%20shooting%22%20), there'd be some helpful information.
 
 ## Changes
 
